@@ -1,0 +1,41 @@
+#+TITLE: Literate Programming
+#+AUTHOR:    Sripathi Kammari and Madhavi Puliraju
+#+EMAIL:     sripathi@vlabs.ac.in , madhavi@vlabs.ac.in
+#+DATE:      2014-11-11 Tue
+
+
+* Objective
+  The objective of this documentation is to learn literate programming with example.
+* Introduction
+*Literate porgramming* 
+It enhances traditional software dovelopment by emedding code in explanatory essays and encourages treating the act of development as one of communication with future maintainers. 
+* Pre-requisites
+  Emacs editor installed (advisable latest version 24.x.x)
+* Procedure
+  *Step 1:* Open emacs through terminal using command
+ #+begin_src shell
+ emacs <filename>
+ #+end_src
+ *step 2:* make sure that file is in  =org-mode= if not change using
+ #+begin_src shell
+ M-x org-mode
+ #+end_src 
+*step 3:* Include profile using
+#+begin_src shell
+M-x org-insert-export-options-template
+#+end_src
+*step 4:* Include following properties and edit property of tangle =<filename>= w.r.t language (e.g hello.py, hello.java and hello.c)
+#+begin_src shell 
+#+PROPERTY: session *scratch*
+#+PROPERTY: results output
+#+PROPERTY: tangle <filename>
+#+PROPERTY: exports code
+#+end_src 
+*step 5:* Start writing documentation followed by code make sure that code embeded in =#+begin_src python= and =#+end_src=
+*step 6:* Now extract the source code from documentation using following cammand, It will prompt for file name give =<filename>.org= file as input
+#+begin_src shell
+M-x org-babel-tangle-file
+#+end_src 
+*step 7:* Now check tangle file in current directory if not exported kill the =<filename>.org= using =C-x k= and reload it.
+* Example
+Try this  [[./example.org][example]] to export [[./example.py][tanglefile]]

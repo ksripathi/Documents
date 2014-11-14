@@ -1,0 +1,66 @@
+#+title:  Install/Upgrade GNU Emacs to Version 24.2.4 for CentOS Machine
+#+Author: Sripathi Kammari
+#+Date:   [2014-11-07]
+
+#+SETUPFILE: ./org-templates/level-0.org
+#+LINK_HOME: ./index.html
+#+LINK_UP:   ./index.html
+
+#+OPTIONS: LaTeX:t          Do the right thing automatically (MathJax)
+
+#+PROPERTY: results output
+#+PROPERTY: tangle no
+#+PROPERTY: exports code
+#+PROPERTY: eval no
+
+* Objective
+
+The objective of this documentation is to install /upgrade emacs to version 24.2.4 for CentOS Machine.
+
+* Pre-requisites
+ CentOS with version =6.5= or greater.
+
+* Instructions for installation
+
+1) Login in to the root command prompt
+#+begin_src shell
+su -
+#+end_src
+2) Export proxy settings. 
+#+begin_src shell
+export http_proxy="http://proxy.iiit.ac.in:8080/"
+export https_proxy="http://proxy.iiit.ac.in:8080/"
+#+end_src
+3) Download and install =liblockfile= from  [[http://pkgs.org/centos-6/epel-x86_64/liblockfile-1.08-9.el6.x86_64.rpm.html][here]].
+#+begin_src shell
+rpm -ivh liblockfile-1.08-9.el6.x86_64.rpm
+#+end_src
+4) Change directory to =/etc/yum.repos.d=.
+#+begin_src shell
+cd /etc/yum.repos.d
+#+end_src
+5) Download repo using =wget=.
+#+begin_src shell
+wget http://pj.freefaculty.org/EL/pjku.repo
+#+end_src
+6) Import key.  
+#+begin_src shell
+rpm --import http://pj.freefaculty.org/EL/PaulJohnson-BinaryPackageSigningKey
+#+end_src
+7) Install emacs. 
+#+begin_src shell
+yum install emacs-24.2-4.el6.x86_64
+#+end_src
+8) Now, check emacs version.
+#+begin_src shell
+emacs --version
+#+end_src
+
+
+
+ 
+
+
+
+
+

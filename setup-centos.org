@@ -1,0 +1,54 @@
+#+title:  Installation of CentOS
+#+Author: Sripathi Kammari and Madhavi Puliraju
+#+Date:   [2014-11-07 Friday]
+
+#+SETUPFILE: ./org-templates/level-0.org
+#+LINK_HOME: ./index.html
+#+LINK_UP:   ./index.html
+
+#+OPTIONS: LaTeX:t          Do the right thing automatically (MathJax)
+
+#+PROPERTY: results output
+#+PROPERTY: tangle no
+#+PROPERTY: exports code
+#+PROPERTY: eval no
+
+* Objective
+The objective of this documentation is to install =Centos=
+* Instructions for installation
+  1) Make sure that lan cable is connected.
+  2) Press power button and get into the boot option by pressing boot key of machine its varies with machine to machine.
+  
+    * E.g :: Acer - F2, Lenovo - F12 and Dell - Esc
+  3) Enable network boot.
+  4) Set network boot as first priority.
+  5) Press F10 to save and exit boot changes.
+  6) Once 4th step done machine gets restart and searches for =Diskless Remote Boot Loader(DRBL)= Server using =Dynamic Host Control Protocol (DHCP)=.
+  7) It will display list of Linux distributions available like Ubuntu, CentOS, Fedora and Lubuntu.
+  8) Choose CentOS and its version.
+ 
+* Pre-installation configuration
+ Now you can see window called centos installer click =Next=.
+  * Keyboard layout :: The next step would ask you to select the keyboard layout which should be =USA= for most =english= users.
+  * Storage type ::  After the keyboard layout, comes the option select the type of storage on which CentOS is to be installed. For local hard drives, should be =Basic storage=.
+  * Host Name :: In the next step the anaconda installer asks for a hostname. So fill it appropriately. If not sure, just enter something like =mypc= or =hplaptop=.
+  * Timezone :: In timezone selection, select =Asia(kolkata)=.
+  * Root Password :: Then enter root password.
+  * Formatting :: Now the wizard would like to know, how you wan't to format the storage device. If you want to format the drive yourself, then select =Custom Layout= and create partitions as needed.
+   It will display multiple options as follows, you can select any one them:
+   1) *Use Entire Space:* It uses complete hard disk space
+   2) *Install Alongside:* It installs centos beside existing OS. 
+   3) *Replace Existing OS:* It formats the existing os and installs centos on the same drive.
+   4) *Something Else:* To create manual partitions, and install one of them.
+   
+   we are selecting the fourth option, as preferable.
+ 
+ * Copying files :: Now the installer will start copying files. Nothing to do here.
+
+* Post-installation configuration
+  After the installation completes and reboots, the welcome wizard would come up which would further configure the system.
+  * License Agreement :: Like all software centos too comes with a license. So accept it.
+  * Create User ::  Now its time to create a user account for yourself to be able to use the system.
+  * Current date & time :: Now input the current date and time and select the option to synchronize over the network.
+  * Kdump ::  This is the last step of the welcome wizard that asks whether kdump should be enabled or not. It is a good idea to enable it.
+  * After the previous step, the system would be rebooted, and finally comes to the login page.
