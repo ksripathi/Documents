@@ -1,21 +1,18 @@
 * Timesheets
 | S.NO | NAME     | -DATE | TASK | TIME | RESULT |
 |------+----------+-------+------+------+--------|
-|    1 | SRIPATHI |       |      |      |        |
-|      |          |       |      |      |        |
-|      |          |       |      |      |        |
-|      |          |       |      |      |        |
-|      |          |       |      |      |        |
+|    1 | Sripathi |       |      |      |        |
+|    2 | Anirudh  |       |      |      |        |
 |      |          |       |      |      |        |
 * Issues
 ** Blockers
 *** Database
 - E-R diagramme itself is not matching with mysql implementation.
-  there are 14 tables in E-R diagrame and in implementation part there are 16 tables.
+  there are 14 tables in E-R diagramme and in implementation part there are 16 tables.
 - The relationships between few tables like =users= and =user_details= is like meaning less. Instead of one-one relationship they have implemented one-many
 - As mentioned in E-R model there are no foreign keys set to tables.
-- There are two tables for users: va_users and va_user_users. A lot of data is redundant.
-- And va_admin_users and va_users as well as va_admin_details and va_user_details redundant. 
+- There are two tables for users: =va_users= and =va_user_users=. A lot of data is redundant.
+- And =va_admin_users= and =va_users= as well as =va_admin_details= and =va_user_details= redundant. 
 - All the users can be generalised to one table and user details to another table with an attribute 
   specifying the role the user as admin/outreach coordintator/nodal coordinator.
   
@@ -31,7 +28,8 @@
 - Indentation is very bad in many files.
 - There were no comments for many files.
 - Script and style tags are used at many places in the code. Its better to define them at the beginning of the file.
-*Conclusion:* Therefore It is very difficult to understand code without comments and also we were struggling with indentation.
+*Conclusion:* - Therefore It is very difficult to do code review.
+              - We are struggling with code indentation as well no comments for code.
 *** Interface
 **** Admin Interface
 - Admin loggin itself is not working after few issues resolved. Therefore we coudn't test all admin roles with latest changes.
@@ -40,18 +38,24 @@
 - There were no form validation for(No.of workshops,No.of Participates and No.of experiments) it is accepting
   strings instead of digits.
 - Single nodal center assigned to different coordinators.(need clarification)
-- Can same user can acts as both nodal and outreach coordinator( need clarification)
+- Can same user can acts as both nodal and outreach coordinator.( need clarification)
 - There is no approve button after nodal coordinator submits the reports.
 - There is no view is implemnted for submitted documents. Therefore he can't view and approve them.
 *Conclusion:* If we host this application with current status outreach coordinator can't recieve documents submitted by nodal coordinators.
               there will be data lost.
 **** Nodal Coordinator
-
 - There were no form validations for all the text feilds while creating new workshop. Like date field is accepting special charachters like &**&&!@3.
+  No.of partcipants, total no of session accepting sepecial characters instead of digits.
 - After workshop is done. Nodal coordinator is unable to upload multiple photos.
   While uploading files there is no file format validation instead he can upload any file formats like .mp3 and .mp4.
 - While creating new workshop save button is not working it showing database errors
 ** Others issues
 Cane be found here https://github.com/Virtual-Labs/outreach-portal/issues
-** Conclusion
+
+*** Issues listed here:
+- Total issues are 27
+- Solved issues are 15 (still needs to check after new database shema is deployed)
+- Critical issues 
+- 
+
 
