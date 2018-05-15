@@ -1,0 +1,59 @@
+#+TITLE: Otalio Metadata Service
+#+DATE: <2018-05-14 Mon>
+#+AUTHOR: Sripathi
+
+* Introduction
+  This document will brief the creation of =Docker= image with
+  =otalio-metadata= project integration
+
+* Creation of docker image
+  Following =Dockerfile= file creates the image
+** Dockerfile
+  #+BEGIN_EXAMPLE
+     # set the base image
+   FROM ubuntu:16.04
+
+   # update sources list
+   RUN apt-get update
+
+   RUN apt-get install -y default-jdk unzip sudo curl vim net-tools apt-utils
+   ADD http://redrockdigimark.com/apachemirror/tomcat/tomcat-8/v8.5.31/bin/apache-tomcat-8.5.31.tar.gz "/opt"
+   WORKDIR "/opt"
+   # RUN wget http://redrockdigimark.com/apachemirror/tomcat/tomcat-8/v8.5.31/bin/apache-tomcat-8.5.31.tar.gz
+   RUN tar -xvf apache-tomcat-8.5.31.tar.gz
+   RUN mv apache-tomcat-8.5.31 tomcat
+   RUN groupadd tomcat
+   RUN useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+   RUN chgrp -R tomcat /opt/tomcat ;chown -R tomcat /opt/tomcat;chmod -R 755 /opt/tomcat;chown -hR tomcat:tomcat tomcat;chmod +x /opt/tomcat/bin/*
+   COPY tomcat-users.xml /opt/tomcat/conf/
+   COPY context.xml /opt/tomcat/webapps/manager/META-INF/
+
+   RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+   RUN apt-get install -y nodejs
+   RUN npm install -g @angular/cli
+   COPY otalio-ui.zip /root
+   WORKDIR "/root/"
+   RUN unzip otalio-ui.zip
+   RUN rm -rf otalio-ui.zip
+   WORKDIR "/root/otalio-ui"
+   RUN npm install
+   RUN ng build --prod --app=system --env=dev
+   RUN cp -r dist/apps/system /opt/tomcat/webapps/
+   CMD [ "/opt/tomcat/bin/catalina.sh", "run" ]
+  #+END_EXAMPLE
+** Build the image
+   #+BEGIN_EXAMPLE
+   sudo docker build -t .
+   #+END_EXAMPLE
+* Creation of instance using image
+  #+BEGIN_EXAMPLE
+  sudo docker run -it <image-id>
+  #+END_EXAMPLE
+* Log in into the created instance
+  #+BEGIN_EXAMPLE
+  sudo docker exec -it <docker-id> /bin/bash
+  #+END_EXAMPLE
+* Access the application
+  #+BEGIN_EXAMPLE
+  firefox ip-of-docker-instance:8080
+  #+END_EXAMPLE
