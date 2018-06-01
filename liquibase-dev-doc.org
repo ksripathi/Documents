@@ -1,0 +1,304 @@
+* Introduction
+  This document will brief the process for migrating database changes
+  from one environment to other using liquibase open source utility
+  (e.g dev to qa)
+* Pre requisites
+  Following set of software packages to be satisfied before using this document
+  - [[https://askubuntu.com/questions/759451/how-can-i-install-openjdk-on-ubuntu-16-04][OpenJDK]]
+  - [[https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.46.tar.gz][MySQL JDBC connector]]
+
+* Provisioning Liquibase
+  1. Download liquibase from [[https://github.com/liquibase/liquibase/releases/download/liquibase-parent-3.5.5/liquibase-3.5.5-bin.tar.gz%20%20][link]]
+  2. Extract the downloaded folder
+  3. Above step(2) results two binaries one for =windows= and other
+     for =linux=
+
+* Use case scenarios
+  Following are the various use case scenarios for which process is
+  defined to migrate the data model changes from one environment to
+  other
+  - Before executing the scenarios one should create a file
+    =db-changelog-master.xml= in the current directory with below content
+    #+BEGIN_EXAMPLE
+     <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     
+     </databaseChangeLog>
+    #+END_EXAMPLE
+** Migrate data model from predevdb to devdb (empty database)
+   - Description : Define the data model in the predevdb and run the
+     below command to get the data model in xml notation
+   - Command :
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver --changeLogFile=db-changelog-1.0.xml --classpath=mysql-connector-java-5.1.46.jar --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root --password=dilip123 diffChangeLog --referenceUrl="jdbc:mysql://159.89.167.29:3306/predevdb" --referenceUsername=root --referencePassword=dilip123
+     #+END_EXAMPLE
+   - Above command will generate =db-changelog-1.0.xml= in the current
+     working directory which contains all the data model changes
+     against devdb
+   - Run the below command to refactor the contents
+     #+BEGIN_EXAMPLE
+     python refactor.py db-changelog-1.0.xml
+     #+END_EXAMPLE
+   - Include this file name in =db-changelog-master.xml= as shown
+     below
+
+     #+BEGIN_EXAMPLE
+     <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     
+     <include file="db-changelog-1.0.xml"/> 
+     </databaseChangeLog>
+
+     #+END_EXAMPLE
+   - Run the below command to apply the changes in devdb
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver  --classpath=mysql-connector-java-5.1.46.jar --changeLogFile=db-changelog-master.xml  --url="jdbc:mysql://159.89.167.29:3306/devdb1" --username=root  --password=dilip123 update
+     #+END_EXAMPLE
+   - On successful run of above command, it should reflect changes in
+     devdb
+** Add a null column in predevdb and migrate this change to devdb using liquebase
+   - Description : Add new column with null constraint in one of the
+     table in predevdb and use below command to get the data model in
+     xml notation
+   - command :
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver --changeLogFile=db-changelog-2.0.xml --classpath=mysql-connector-java-5.1.46.jar --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root --password=dilip123 diffChangeLog --referenceUrl="jdbc:mysql://159.89.167.29:3306/predevdb" --referenceUsername=root --referencePassword=dilip123
+     #+END_EXAMPLE
+
+   - Above command will output =db-changelog-2.0.xml= file and which
+     contains data model changes against devdb
+   - Append this file to =db-changelog-master.xml= as shown below
+     #+BEGIN_EXAMPLE
+     <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     
+     <include file="db-changelog-1.0.xml"/> 
+     <include file="db-changelog-2.0.xml"/> 
+     </databaseChangeLog>
+
+     #+END_EXAMPLE
+   - Run the below command to refactor the contents
+     #+BEGIN_EXAMPLE
+     python refactor.py db-changelog-2.0.xml
+     #+END_EXAMPLE
+   - Run the command to apply the changes against devdb
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver  --classpath=mysql-connector-java-5.1.46.jar --changeLogFile=db-changelog-master.xml  --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root  --password=dilip123 update
+     #+END_EXAMPLE
+   - On successful run of above command, it should reflect changes in
+     devdb
+
+** Add a not null column in predevdb migrate this change to devdb using liquebase- Data shud be there is the tables for both db's
+
+   - Description : Add new column with not null constraint in one of
+     the table in predevdb and use below command to get the data model
+     changes in xml notation
+     
+   - command :
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver --changeLogFile=db-changelog-3.0.xml --classpath=mysql-connector-java-5.1.46.jar --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root --password=dilip123 diffChangeLog --referenceUrl="jdbc:mysql://159.89.167.29:3306/predevdb" --referenceUsername=root --referencePassword=dilip123
+     #+END_EXAMPLE
+   - Run the below command to refactor the contents
+     #+BEGIN_EXAMPLE
+     python refactor.py db-changelog-3.0.xml
+     #+END_EXAMPLE
+
+   - Above command will output =db-changelog-3.0.xml= file which has
+     data model changes against devdb
+   - Append this file to =db-changelog-master.xml= as shown below
+     #+BEGIN_EXAMPLE
+     <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     
+     <include file="db-changelog-1.0.xml"/> 
+     <include file="db-changelog-2.0.xml"/> 
+     <include file="db-changelog-3.0.xml"/> 
+     </databaseChangeLog>
+
+     #+END_EXAMPLE
+   - Run the command to apply the changes against devdb
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver  --classpath=mysql-connector-java-5.1.46.jar --changeLogFile=db-changelog-master.xml  --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root  --password=dilip123 update
+     #+END_EXAMPLE
+   - On successful run of above command, it should reflect changes in
+     devdb
+** Create new table 
+
+   - Description : Create new table in predevdb and use below command
+     to get the data model changes in xml notation
+   - command :
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver --changeLogFile=db-changelog-4.0.xml --classpath=mysql-connector-java-5.1.46.jar --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root --password=dilip123 diffChangeLog --referenceUrl="jdbc:mysql://159.89.167.29:3306/predevdb" --referenceUsername=root --referencePassword=dilip123
+     #+END_EXAMPLE
+   - Run the below command to refactor the contents
+     #+BEGIN_EXAMPLE
+     python refactor.py db-changelog-4.0.xml
+     #+END_EXAMPLE
+
+   - Above command will output =db-changelog-4.0.xml= file which
+     contains data model changes against devdb
+   - Append this file to =db-changelog-master.xml= as shown below
+     #+BEGIN_EXAMPLE
+     <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     
+     <include file="db-changelog-1.0.xml"/> 
+     <include file="db-changelog-2.0.xml"/> 
+     <include file="db-changelog-3.0.xml"/> 
+     <include file="db-changelog-4.0.xml"/> 
+     </databaseChangeLog>
+
+     #+END_EXAMPLE
+   - Run the command to apply the changes against devdb
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver  --classpath=mysql-connector-java-5.1.46.jar --changeLogFile=db-changelog-master.xml  --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root  --password=dilip123 update
+     #+END_EXAMPLE
+   - On successful run of above command, it should reflect changes in
+     devdb
+
+** Changes in view defination should reflect from predevdb to devdb
+
+   - Description : Do apply changes in view definition on predevdb and
+     use below command to get the data model chagnes in xml notation
+
+   - command :
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver --changeLogFile=db-changelog-5.0.xml --classpath=mysql-connector-java-5.1.46.jar --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root --password=dilip123 diffChangeLog --referenceUrl="jdbc:mysql://159.89.167.29:3306/predevdb" --referenceUsername=root --referencePassword=dilip123
+     #+END_EXAMPLE
+   - Above command will output =db-changelog-5.0.xml= file which
+     contains all the data model changes against devdb
+   - Append this file to =db-changelog-master.xml= as shown below
+     #+BEGIN_EXAMPLE
+     <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     
+     <include file="db-changelog-1.0.xml"/> 
+     <include file="db-changelog-2.0.xml"/> 
+     <include file="db-changelog-3.0.xml"/> 
+     <include file="db-changelog-4.0.xml"/> 
+     <include file="db-changelog-5.0.xml"/> 
+     </databaseChangeLog>
+
+     #+END_EXAMPLE
+   - Run the below command to refactor the contents
+     #+BEGIN_EXAMPLE
+     python refactor.py db-changelog-5.0.xml
+     #+END_EXAMPLE
+
+   - Run the command to apply the changes against devdb
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver  --classpath=mysql-connector-java-5.1.46.jar --changeLogFile=db-changelog-master.xml  --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root  --password=dilip123 update
+     #+END_EXAMPLE
+   - On successful run of above command, it should reflect changes in
+     devdb
+
+** Rename column in table
+
+   - Description : To rename the column name in the table, developer
+     should define the data model in terms of xml notation. Following
+     is the example for the reference
+     #+BEGIN_EXAMPLE
+     
+      <changeSet author="user" id="renameColumn-example">
+	  <renameColumn catalogName="cat"
+		  columnDataType="int"
+		  newColumnName="new_id"
+		  oldColumnName="old_id"
+		  remarks="A String"
+		  schemaName="public"
+		  tableName="person"/>
+      </changeSet>
+
+
+     #+END_EXAMPLE
+
+   - Create the xml file =db-changelog-6.0.xml= and add the content
+     accordingly
+     
+   - Append this file to =db-changelog-master.xml= as shown below
+     #+BEGIN_EXAMPLE
+     <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     <include file="db-changelog-1.0.xml"/> 
+     <include file="db-changelog-2.0.xml"/> 
+     <include file="db-changelog-3.0.xml"/> 
+     <include file="db-changelog-4.0.xml"/> 
+     <include file="db-changelog-5.0.xml"/> 
+     <include file="db-changelog-6.0.xml"/> 
+     </databaseChangeLog>
+
+     #+END_EXAMPLE
+
+   - Run the command to apply the changes against devdb
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver  --classpath=mysql-connector-java-5.1.46.jar --changeLogFile=db-changelog-master.xml  --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root  --password=dilip123 update
+     #+END_EXAMPLE
+   - On successful run of above command, it should reflect changes in
+     devdb
+   
+** Rename table name
+   - Description : To rename the table name, developer should define
+     the data model in terms of xml notation. Following is the example
+     for the reference
+     #+BEGIN_EXAMPLE
+     
+      <changeSet author="user1" id="renameTable-example">
+	  <renameTable catalogName="cat"
+		  newTableName="new_table"
+		  oldTableName="old_table"
+		  schemaName="public"/>
+      </changeSet>
+
+     #+END_EXAMPLE
+
+   - Create the xml file =db-changelog-7.0.xml= and add the content
+     accordingly
+
+   - Append this file to =db-changelog-master.xml= as shown below
+     #+BEGIN_EXAMPLE
+     <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+     <include file="db-changelog-1.0.xml"/> 
+     <include file="db-changelog-2.0.xml"/> 
+     <include file="db-changelog-3.0.xml"/> 
+     <include file="db-changelog-4.0.xml"/> 
+     <include file="db-changelog-5.0.xml"/> 
+     <include file="db-changelog-6.0.xml"/> 
+     <include file="db-changelog-7.0.xml"/> 
+     </databaseChangeLog>
+
+     #+END_EXAMPLE
+
+   - Run the command to apply the changes against devdb
+     #+BEGIN_EXAMPLE
+     ./liquibase --driver=com.mysql.jdbc.Driver  --classpath=mysql-connector-java-5.1.46.jar --changeLogFile=db-changelog-master.xml  --url="jdbc:mysql://159.89.167.29:3306/devdb" --username=root  --password=dilip123 update
+     #+END_EXAMPLE
+   - On successful run of above command, it should reflect changes in
+     devdb
+
+** More scenarios
+   For any more scenarios including the below follow the same above
+   process, keep update the =db-changelog-master.xml= file with
+   resultant file and execute the necessary commands
+   - Changes in PK in predevdb
+   - Changes in FK in predevdb
+   - Adding FK in predevdb
+   - Adding PK in predevdb
+   - Adding Index and Changing Index definitions in predevdb
+   - Drop column in predevdb
